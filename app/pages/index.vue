@@ -1,0 +1,365 @@
+<template>
+  <div class="min-h-screen bg-gray-50">
+    <!-- Top Bar -->
+    <div class="bg-white shadow-sm border-b border-gray-200 px-4 py-3">
+      <div class="flex items-center space-x-3">
+        <div class="flex-1 relative">
+          <input
+            type="text"
+            placeholder="Search all product here..."
+            class="w-full pl-4 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
+          />
+          <button class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors font-bold text-base">
+            Search
+          </button>
+        </div>
+        <ExportButton @click="handleExport" title="Export Order" />
+      </div>
+    </div>
+
+    <!-- Category Filters -->
+    <div class="bg-white px-4 py-3 border-b border-gray-200">
+      <h3 class="text-xl font-bold text-gray-900 mb-3">Categories</h3>
+      <div class="flex space-x-2 overflow-x-auto pb-2">
+        <button
+          v-for="category in categories"
+          :key="category.id"
+          @click="activeCategory = category.id"
+          :class="[
+            'px-4 py-2 rounded-md text-base font-bold whitespace-nowrap transition-all',
+            activeCategory === category.id
+              ? 'bg-blue-600 text-white shadow-lg'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          ]"
+        >
+          {{ category.name }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex flex-col lg:flex-row min-h-[calc(100vh-140px)]">
+      <!-- Product Area (Left) -->
+      <div class="flex-1 lg:w-[70%] p-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <ProductCard
+            v-for="product in filteredProducts"
+            :key="product.id"
+            :product="product"
+            @show-modal="showProductModal"
+          />
+        </div>
+      </div>
+
+      <!-- Order Details Sidebar (Right) -->
+      <div class="lg:w-[30%] lg:sticky lg:top-0 lg:h-screen">
+        <OrderSidebar
+          :order-items="orderItems"
+          :subtotal="subtotal"
+          :discount="discount"
+          :sales-tax="salesTax"
+          :total="total"
+          :voucher-code="voucherCode"
+          :member-phone="memberPhone"
+          :member-name="memberName"
+          :member-email="memberEmail"
+          @remove-item="removeFromOrder"
+          @update-quantity="updateQuantity"
+          @pay-now="handlePayNow"
+          @add-member="showMemberModal"
+          @add-voucher="showVoucherModal"
+        />
+      </div>
+    </div>
+
+    <!-- Product Modal -->
+    <ProductModal
+      :is-open="isModalOpen"
+      :product="selectedProduct"
+      @close="closeProductModal"
+      @add-to-order="addToOrder"
+    />
+
+    <!-- Payment Modal -->
+    <PaymentModal
+      :is-open="isPaymentModalOpen"
+      :order-summary="{ subtotal, discount, salesTax, total }"
+      @close="closePaymentModal"
+      @payment-processed="handlePaymentProcessed"
+    />
+
+    <!-- Member Modal -->
+    <MemberModal
+      :is-open="isMemberModalOpen"
+      @close="closeMemberModal"
+      @member-added="handleMemberAdded"
+    />
+
+    <!-- Voucher Modal -->
+    <VoucherModal
+      :is-open="isVoucherModalOpen"
+      @close="closeVoucherModal"
+      @voucher-added="handleVoucherAdded"
+    />
+  </div>
+</template>
+
+<script setup>
+// Import components
+import PaymentModal from '~/components/PaymentModal.vue'
+import MemberModal from '~/components/MemberModal.vue'
+import VoucherModal from '~/components/VoucherModal.vue'
+
+// Dummy data
+const categories = ref([
+  { id: 'all', name: 'All' },
+  { id: 'brew-equipment', name: 'Brew Equipment' },
+  { id: 'coffee', name: 'Coffee' },
+  { id: 'espresso', name: 'Espresso' },
+  { id: 'instant-rtd', name: 'Instant + RTD' },
+  { id: 'ceramics', name: 'Ceramics' },
+  { id: 'apparel', name: 'Apparel' }
+])
+
+const products = ref([
+  {
+    id: 1,
+    name: 'Pour Over Coffee Maker',
+    price: 29.99,
+    category: 'brew-equipment',
+    image: '☕'
+  },
+  {
+    id: 2,
+    name: 'Premium Arabica Beans',
+    price: 15.99,
+    category: 'coffee',
+    image: '🫘'
+  },
+  {
+    id: 3,
+    name: 'Espresso Machine',
+    price: 299.99,
+    category: 'espresso',
+    image: '⚡'
+  },
+  {
+    id: 4,
+    name: 'Ceramic Coffee Mug',
+    price: 12.99,
+    category: 'ceramics',
+    image: '☕'
+  },
+  {
+    id: 5,
+    name: 'Coffee Grinder',
+    price: 89.99,
+    category: 'brew-equipment',
+    image: '⚙️'
+  },
+  {
+    id: 6,
+    name: 'Cold Brew Kit',
+    price: 45.99,
+    category: 'instant-rtd',
+    image: '🧊'
+  },
+  {
+    id: 7,
+    name: 'Barista Apron',
+    price: 24.99,
+    category: 'apparel',
+    image: '👕'
+  },
+  {
+    id: 8,
+    name: 'French Press',
+    price: 34.99,
+    category: 'brew-equipment',
+    image: '☕'
+  },
+  {
+    id: 9,
+    name: 'Espresso Cups Set',
+    price: 19.99,
+    category: 'ceramics',
+    image: '☕'
+  }
+])
+
+const orderItems = ref([])
+const activeCategory = ref('all')
+const isModalOpen = ref(false)
+const selectedProduct = ref(null)
+const isPaymentModalOpen = ref(false)
+const isMemberModalOpen = ref(false)
+const isVoucherModalOpen = ref(false)
+const voucherCode = ref('')
+const memberPhone = ref('')
+const memberName = ref('')
+const memberEmail = ref('')
+
+// Computed properties
+const filteredProducts = computed(() => {
+  if (activeCategory.value === 'all') return products.value
+  return products.value.filter(product => product.category === activeCategory.value)
+})
+
+const subtotal = computed(() => {
+  return orderItems.value.reduce((sum, item) => sum + (item.totalPrice || item.price * item.quantity), 0)
+})
+
+const discount = computed(() => {
+  let baseDiscount = subtotal.value * 0.05 // 5% base discount
+  
+  // Apply voucher code discount if provided
+  if (voucherCode.value.trim()) {
+    // Simulate different voucher codes with different discounts
+    const voucher = voucherCode.value.toLowerCase().trim()
+    if (voucher === 'save10') {
+      baseDiscount += subtotal.value * 0.10 // Additional 10% off
+    } else if (voucher === 'save20') {
+      baseDiscount += subtotal.value * 0.20 // Additional 20% off
+    } else if (voucher === 'freeshipping') {
+      // This would be handled differently in a real app
+      baseDiscount += 5.00 // $5 off for free shipping
+    }
+  }
+  
+  return Math.min(baseDiscount, subtotal.value) // Ensure discount doesn't exceed subtotal
+})
+
+const salesTax = computed(() => {
+  return (subtotal.value - discount.value) * 0.08 // 8% tax
+})
+
+const total = computed(() => {
+  return subtotal.value - discount.value + salesTax.value
+})
+
+// Methods
+const addToOrder = (orderItem) => {
+  const existingItem = orderItems.value.find(item => 
+    item.id === orderItem.id && 
+    item.size === orderItem.size && 
+    item.specialInstructions === orderItem.specialInstructions
+  )
+  
+  if (existingItem) {
+    existingItem.quantity += orderItem.quantity
+  } else {
+    orderItems.value.push({
+      ...orderItem,
+      orderId: Date.now() // Unique ID for this specific order item
+    })
+  }
+}
+
+const removeFromOrder = (orderId) => {
+  const index = orderItems.value.findIndex(item => item.orderId === orderId)
+  if (index > -1) {
+    orderItems.value.splice(index, 1)
+  }
+}
+
+const updateQuantity = (orderId, quantity) => {
+  const item = orderItems.value.find(item => item.orderId === orderId)
+  if (item) {
+    if (quantity <= 0) {
+      removeFromOrder(orderId)
+    } else {
+      item.quantity = quantity
+    }
+  }
+}
+
+const handlePayNow = () => {
+  if (orderItems.value.length === 0) {
+    alert('Please add items to your order first')
+    return
+  }
+  isPaymentModalOpen.value = true
+}
+
+const showProductModal = (product) => {
+  selectedProduct.value = product
+  isModalOpen.value = true
+}
+
+const closeProductModal = () => {
+  isModalOpen.value = false
+  selectedProduct.value = null
+}
+
+const closePaymentModal = () => {
+  isPaymentModalOpen.value = false
+}
+
+const handlePaymentProcessed = (paymentMethod) => {
+  console.log(`Payment processed via ${paymentMethod}`)
+  // In a real app, this would complete the order
+  // For now, we'll just show a success message
+  alert(`Order completed successfully! Payment method: ${paymentMethod}`)
+  
+  // Clear the order
+  orderItems.value = []
+  voucherCode.value = ''
+  memberPhone.value = ''
+}
+
+const handleExport = () => {
+  if (orderItems.value.length === 0) {
+    alert('No items to export')
+    return
+  }
+  
+  const orderData = {
+    items: orderItems.value,
+    subtotal: subtotal.value,
+    discount: discount.value,
+    salesTax: salesTax.value,
+    total: total.value,
+    timestamp: new Date().toISOString()
+  }
+  
+  const dataStr = JSON.stringify(orderData, null, 2)
+  const dataBlob = new Blob([dataStr], { type: 'application/json' })
+  const url = URL.createObjectURL(dataBlob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = `order-${Date.now()}.json`
+  link.click()
+  URL.revokeObjectURL(url)
+  
+  alert('Order exported successfully!')
+}
+
+const showMemberModal = () => {
+  isMemberModalOpen.value = true
+}
+
+const closeMemberModal = () => {
+  isMemberModalOpen.value = false
+}
+
+const handleMemberAdded = (member) => {
+  memberName.value = member.name
+  memberEmail.value = member.email
+  memberPhone.value = member.phone
+  isMemberModalOpen.value = false
+}
+
+const showVoucherModal = () => {
+  isVoucherModalOpen.value = true
+}
+
+const closeVoucherModal = () => {
+  isVoucherModalOpen.value = false
+}
+
+const handleVoucherAdded = (voucher) => {
+  voucherCode.value = voucher
+  isVoucherModalOpen.value = false
+}
+</script>
+  
