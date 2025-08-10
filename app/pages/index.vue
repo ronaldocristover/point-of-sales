@@ -19,21 +19,13 @@
 
     <!-- Category Filters -->
     <div class="bg-white px-4 py-3 border-b border-gray-200">
-      <h3 class="text-xl font-bold text-gray-900 mb-3">Categories</h3>
-      <div class="flex space-x-2 overflow-x-auto pb-2">
-        <button
-          v-for="category in categories"
+      <div class="flex space-x-3 overflow-x-auto pb-2">
+        <CategoryCard
+          v-for="category in categoriesWithCounts"
           :key="category.id"
+          :category="category"
           @click="activeCategory = category.id"
-          :class="[
-            'px-4 py-2 rounded-md text-base font-bold whitespace-nowrap transition-all',
-            activeCategory === category.id
-              ? 'bg-blue-600 text-white shadow-lg'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-          ]"
-        >
-          {{ category.name }}
-        </button>
+        />
       </div>
     </div>
 
@@ -66,8 +58,10 @@
           @remove-item="removeFromOrder"
           @update-quantity="updateQuantity"
           @pay-now="handlePayNow"
-          @add-member="showMemberModal"
+          @add-customer="showMemberModal"
           @add-voucher="showVoucherModal"
+          @remove-member="handleRemoveMember"
+          @remove-voucher="handleRemoveVoucher"
         />
       </div>
     </div>
@@ -105,20 +99,22 @@
 </template>
 
 <script setup>
+import { ref, computed } from 'vue'
 // Import components
 import PaymentModal from '~/components/PaymentModal.vue'
 import MemberModal from '~/components/MemberModal.vue'
 import VoucherModal from '~/components/VoucherModal.vue'
+import CategoryCard from '~/components/CategoryCard.vue'
 
 // Dummy data
 const categories = ref([
-  { id: 'all', name: 'All' },
-  { id: 'brew-equipment', name: 'Brew Equipment' },
-  { id: 'coffee', name: 'Coffee' },
-  { id: 'espresso', name: 'Espresso' },
-  { id: 'instant-rtd', name: 'Instant + RTD' },
-  { id: 'ceramics', name: 'Ceramics' },
-  { id: 'apparel', name: 'Apparel' }
+  { id: 'all', name: 'All', icon: '🌟' },
+  { id: 'brew-equipment', name: 'Brew Equipment', icon: '🛠️' },
+  { id: 'coffee', name: 'Coffee', icon: '☕' },
+  { id: 'espresso', name: 'Espresso', icon: '⚡' },
+  { id: 'instant-rtd', name: 'Instant + RTD', icon: '🧊' },
+  { id: 'ceramics', name: 'Ceramics', icon: '🏺' },
+  { id: 'apparel', name: 'Apparel', icon: '👕' }
 ])
 
 const products = ref([
@@ -200,6 +196,19 @@ const memberName = ref('')
 const memberEmail = ref('')
 
 // Computed properties
+const categoriesWithCounts = computed(() => {
+  return categories.value.map(cat => {
+    const count = cat.id === 'all'
+      ? products.value.length
+      : products.value.filter(p => p.category === cat.id).length
+    return {
+      ...cat,
+      itemCount: count,
+      selected: activeCategory.value === cat.id
+    }
+  })
+})
+
 const filteredProducts = computed(() => {
   if (activeCategory.value === 'all') return products.value
   return products.value.filter(product => product.category === activeCategory.value)
@@ -210,23 +219,25 @@ const subtotal = computed(() => {
 })
 
 const discount = computed(() => {
-  let baseDiscount = subtotal.value * 0.05 // 5% base discount
+  let baseDiscount = 0;
+  // 5% member discount
+  if (memberPhone.value) {
+    baseDiscount = subtotal.value * 0.05
+  }
   
   // Apply voucher code discount if provided
   if (voucherCode.value.trim()) {
-    // Simulate different voucher codes with different discounts
     const voucher = voucherCode.value.toLowerCase().trim()
     if (voucher === 'save10') {
       baseDiscount += subtotal.value * 0.10 // Additional 10% off
     } else if (voucher === 'save20') {
       baseDiscount += subtotal.value * 0.20 // Additional 20% off
     } else if (voucher === 'freeshipping') {
-      // This would be handled differently in a real app
       baseDiscount += 5.00 // $5 off for free shipping
     }
   }
   
-  return Math.min(baseDiscount, subtotal.value) // Ensure discount doesn't exceed subtotal
+  return Math.min(baseDiscount, subtotal.value)
 })
 
 const salesTax = computed(() => {
@@ -297,14 +308,13 @@ const closePaymentModal = () => {
 
 const handlePaymentProcessed = (paymentMethod) => {
   console.log(`Payment processed via ${paymentMethod}`)
-  // In a real app, this would complete the order
-  // For now, we'll just show a success message
   alert(`Order completed successfully! Payment method: ${paymentMethod}`)
   
-  // Clear the order
   orderItems.value = []
   voucherCode.value = ''
   memberPhone.value = ''
+  memberName.value = ''
+  memberEmail.value = ''
 }
 
 const handleExport = () => {
@@ -349,6 +359,12 @@ const handleMemberAdded = (member) => {
   isMemberModalOpen.value = false
 }
 
+const handleRemoveMember = () => {
+  memberPhone.value = ''
+  memberName.value = ''
+  memberEmail.value = ''
+}
+
 const showVoucherModal = () => {
   isVoucherModalOpen.value = true
 }
@@ -361,5 +377,8 @@ const handleVoucherAdded = (voucher) => {
   voucherCode.value = voucher
   isVoucherModalOpen.value = false
 }
+
+const handleRemoveVoucher = () => {
+  voucherCode.value = ''
+}
 </script>
-  

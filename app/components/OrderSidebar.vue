@@ -1,8 +1,8 @@
 <template>
   <div class="bg-white shadow-lg h-full flex flex-col">
     <!-- Header -->
-    <div class="p-4 border-b border-gray-200">
-      <h2 class="text-3xl font-bold text-gray-900">Order Details</h2>
+    <div class="p-4">
+      <h3 class="text-xl font-bold text-gray-800">Your order:</h3>
     </div>
     
     <!-- Order Items List -->
@@ -19,49 +19,42 @@
         <div
           v-for="item in orderItems"
           :key="item.orderId || item.id"
-          class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg border-2 border-transparent hover:border-orange-400 transition-all cursor-pointer"
+          class="flex items-center p-3 bg-white rounded-lg shadow-sm border"
         >
-          <!-- Thumbnail -->
-          <ImagePlaceholder :content="item.image" size="small" class="flex-shrink-0" />
-          
-                     <!-- Item Details -->
-           <div class="flex-1 min-w-0">
-             <h4 class="font-medium text-gray-900 text-base truncate">{{ item.name }}</h4>
-             <p class="text-base text-gray-600">${{ item.totalPrice ? item.totalPrice.toFixed(2) : (item.price * item.quantity).toFixed(2) }}</p>
-             <p v-if="item.size" class="text-sm text-gray-500">{{ item.size }}</p>
-             <p v-if="item.specialInstructions" class="text-sm text-gray-500 italic">{{ item.specialInstructions }}</p>
-           </div>
-          
-          <!-- Quantity Controls -->
-          <div class="flex items-center space-x-2">
-            <button
-              @click="$emit('update-quantity', item.orderId || item.id, item.quantity - 1)"
-              class="w-9 h-9 bg-orange-400 text-white rounded-md flex items-center justify-center hover:bg-orange-500 transition-colors"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
-              </svg>
-            </button>
-            <span class="text-base font-medium w-9 text-center">{{ item.quantity }}</span>
-            <button
-              @click="$emit('update-quantity', item.orderId || item.id, item.quantity + 1)"
-              class="w-9 h-9 bg-orange-400 text-white rounded-md flex items-center justify-center hover:bg-orange-500 transition-colors"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-              </svg>
-            </button>
+          <!-- Image -->
+          <ImagePlaceholder :content="item.image" size="small" class="flex-shrink-0 rounded-md w-16 h-16 object-cover" />
+
+          <!-- Details -->
+          <div class="flex-1 ml-4">
+            <h4 class="font-bold text-gray-800 text-base">{{ item.name }}</h4>
+            <div class="flex items-center mt-2">
+              <!-- Quantity Controls -->
+              <button
+                @click.stop="$emit('update-quantity', item.orderId || item.id, item.quantity - 1)"
+                class="w-7 h-7 bg-gray-200 rounded-md flex items-center justify-center hover:bg-gray-300 transition-colors"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
+              </button>
+              <span class="mx-3 font-bold text-orange-500 text-base">{{ item.quantity }}</span>
+              <button
+                @click.stop="$emit('update-quantity', item.orderId || item.id, item.quantity + 1)"
+                class="w-7 h-7 bg-gray-200 rounded-md flex items-center justify-center hover:bg-gray-300 transition-colors"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+              </button>
+            </div>
           </div>
-          
-          <!-- Remove Button -->
-          <button
-            @click="$emit('remove-item', item.orderId || item.id)"
-            class="w-9 h-9 bg-red-100 text-red-600 rounded-md flex items-center justify-center hover:bg-red-200 transition-colors flex-shrink-0"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
+
+          <!-- Price and Remove -->
+          <div class="text-right ml-4">
+            <button
+              @click.stop="$emit('remove-item', item.orderId || item.id)"
+              class="text-gray-400 hover:text-red-500 mb-2 transition-colors"
+            >
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd"></path></svg>
+            </button>
+            <p class="font-bold text-gray-800 text-base">${{ (item.price * item.quantity).toFixed(2) }}</p>
+          </div>
         </div>
       </div>
     </div>

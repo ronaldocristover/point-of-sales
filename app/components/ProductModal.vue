@@ -26,7 +26,7 @@
         <!-- Product Info -->
         <div class="mb-6">
           <h3 class="text-xl font-bold text-gray-900 mb-2">{{ product.name }}</h3>
-          <p class="text-2xl font-bold text-blue-600">${{ product.price.toFixed(2) }}</p>
+          <p class="text-2xl font-bold text-orange-500">${{ product.price.toFixed(2) }}</p>
         </div>
 
         <!-- Product Options -->
@@ -44,7 +44,7 @@
                 :class="[
                   'px-4 py-2 text-sm font-medium rounded-md border-2 transition-colors',
                   selectedSize === size
-                    ? 'border-blue-600 bg-blue-50 text-blue-600'
+                    ? 'border-orange-500 bg-orange-50 text-orange-600'
                     : 'border-gray-300 text-gray-700 hover:border-gray-400'
                 ]"
               >
@@ -83,7 +83,7 @@
             <textarea
               v-model="specialInstructions"
               placeholder="Any special requests?"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
               rows="2"
             ></textarea>
           </div>
@@ -93,7 +93,7 @@
         <div class="mb-6 p-4 bg-gray-50 rounded-lg">
           <div class="flex justify-between items-center">
             <span class="text-lg font-semibold text-gray-900">Total:</span>
-            <span class="text-2xl font-bold text-blue-600">${{ (product.price * quantity).toFixed(2) }}</span>
+            <span class="text-2xl font-bold text-orange-500">${{ (product.price * quantity).toFixed(2) }}</span>
           </div>
         </div>
 
@@ -107,7 +107,7 @@
           </button>
           <button
             @click="addToOrder"
-            class="flex-1 px-6 py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-colors"
+            class="flex-1 px-6 py-3 bg-orange-400 text-white font-semibold rounded-md hover:bg-orange-500 transition-colors"
           >
             Add to Order
           </button>
