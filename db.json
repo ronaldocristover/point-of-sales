@@ -1,0 +1,77 @@
+{
+  "categories": [
+    { "id": "all", "name": "All", "icon": "🌟" },
+    { "id": "brew-equipment", "name": "Brew Equipment", "icon": "🛠️" },
+    { "id": "coffee", "name": "Coffee", "icon": "☕" },
+    { "id": "espresso", "name": "Espresso", "icon": "⚡" },
+    { "id": "instant-rtd", "name": "Instant + RTD", "icon": "🧊" },
+    { "id": "ceramics", "name": "Ceramics", "icon": "🏺" },
+    { "id": "apparel", "name": "Apparel", "icon": "👕" }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "name": "Pour Over Coffee Maker",
+      "price": 29.99,
+      "category": "brew-equipment",
+      "image": "☕"
+    },
+    {
+      "id": 2,
+      "name": "Premium Arabica Beans",
+      "price": 15.99,
+      "category": "coffee",
+      "image": "🫘"
+    },
+    {
+      "id": 3,
+      "name": "Espresso Machine",
+      "price": 299.99,
+      "category": "espresso",
+      "image": "⚡"
+    },
+    {
+      "id": 4,
+      "name": "Ceramic Coffee Mug",
+      "price": 12.99,
+      "category": "ceramics",
+      "image": "☕"
+    },
+    {
+      "id": 5,
+      "name": "Coffee Grinder",
+      "price": 89.99,
+      "category": "brew-equipment",
+      "image": "⚙️"
+    },
+    {
+      "id": 6,
+      "name": "Cold Brew Kit",
+      "price": 45.99,
+      "category": "instant-rtd",
+      "image": "🧊"
+    },
+    {
+      "id": 7,
+      "name": "Barista Apron",
+      "price": 24.99,
+      "category": "apparel",
+      "image": "👕"
+    },
+    {
+      "id": 8,
+      "name": "French Press",
+      "price": 34.99,
+      "category": "brew-equipment",
+      "image": "☕"
+    },
+    {
+      "id": 9,
+      "name": "Espresso Cups Set",
+      "price": 19.99,
+      "category": "ceramics",
+      "image": "☕"
+    }
+  ],
+  "orders": []
+}

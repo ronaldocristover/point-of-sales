@@ -7,9 +7,9 @@
           <input
             type="text"
             placeholder="Search all product here..."
-            class="w-full pl-4 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
+            class="w-full pl-4 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-base"
           />
-          <button class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors font-bold text-base">
+          <button class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-orange-400 text-white px-4 py-2 rounded-md hover:bg-orange-500 transition-colors font-bold text-base">
             Search
           </button>
         </div>
@@ -19,7 +19,8 @@
 
     <!-- Category Filters -->
     <div class="bg-white px-4 py-3 border-b border-gray-200">
-      <div class="flex space-x-3 overflow-x-auto pb-2">
+      <div v-if="categoriesLoading" class="text-center py-4">Loading categories...</div>
+      <div v-else class="flex space-x-3 overflow-x-auto pb-2">
         <CategoryCard
           v-for="category in categoriesWithCounts"
           :key="category.id"
@@ -33,7 +34,8 @@
     <div class="flex flex-col lg:flex-row min-h-[calc(100vh-140px)]">
       <!-- Product Area (Left) -->
       <div class="flex-1 lg:w-[70%] p-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div v-if="productsLoading" class="text-center py-10">Loading products...</div>
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <ProductCard
             v-for="product in filteredProducts"
             :key="product.id"
@@ -68,6 +70,7 @@
 
     <!-- Product Modal -->
     <ProductModal
+      v-if="selectedProduct"
       :is-open="isModalOpen"
       :product="selectedProduct"
       @close="closeProductModal"
@@ -100,88 +103,17 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-// Import components
 import PaymentModal from '~/components/PaymentModal.vue'
 import MemberModal from '~/components/MemberModal.vue'
 import VoucherModal from '~/components/VoucherModal.vue'
 import CategoryCard from '~/components/CategoryCard.vue'
+import useApi from '~/services/api'
 
-// Dummy data
-const categories = ref([
-  { id: 'all', name: 'All', icon: '🌟' },
-  { id: 'brew-equipment', name: 'Brew Equipment', icon: '🛠️' },
-  { id: 'coffee', name: 'Coffee', icon: '☕' },
-  { id: 'espresso', name: 'Espresso', icon: '⚡' },
-  { id: 'instant-rtd', name: 'Instant + RTD', icon: '🧊' },
-  { id: 'ceramics', name: 'Ceramics', icon: '🏺' },
-  { id: 'apparel', name: 'Apparel', icon: '👕' }
-])
+const api = useApi()
 
-const products = ref([
-  {
-    id: 1,
-    name: 'Pour Over Coffee Maker',
-    price: 29.99,
-    category: 'brew-equipment',
-    image: '☕'
-  },
-  {
-    id: 2,
-    name: 'Premium Arabica Beans',
-    price: 15.99,
-    category: 'coffee',
-    image: '🫘'
-  },
-  {
-    id: 3,
-    name: 'Espresso Machine',
-    price: 299.99,
-    category: 'espresso',
-    image: '⚡'
-  },
-  {
-    id: 4,
-    name: 'Ceramic Coffee Mug',
-    price: 12.99,
-    category: 'ceramics',
-    image: '☕'
-  },
-  {
-    id: 5,
-    name: 'Coffee Grinder',
-    price: 89.99,
-    category: 'brew-equipment',
-    image: '⚙️'
-  },
-  {
-    id: 6,
-    name: 'Cold Brew Kit',
-    price: 45.99,
-    category: 'instant-rtd',
-    image: '🧊'
-  },
-  {
-    id: 7,
-    name: 'Barista Apron',
-    price: 24.99,
-    category: 'apparel',
-    image: '👕'
-  },
-  {
-    id: 8,
-    name: 'French Press',
-    price: 34.99,
-    category: 'brew-equipment',
-    image: '☕'
-  },
-  {
-    id: 9,
-    name: 'Espresso Cups Set',
-    price: 19.99,
-    category: 'ceramics',
-    image: '☕'
-  }
-])
+// Data fetching
+const { data: categories, pending: categoriesLoading } = await useAsyncData('categories', () => api.getCategories(), { default: () => [] })
+const { data: products, pending: productsLoading } = await useAsyncData('products', () => api.getProducts(), { default: () => [] })
 
 const orderItems = ref([])
 const activeCategory = ref('all')
@@ -197,19 +129,33 @@ const memberEmail = ref('')
 
 // Computed properties
 const categoriesWithCounts = computed(() => {
-  return categories.value.map(cat => {
-    const count = cat.id === 'all'
-      ? products.value.length
-      : products.value.filter(p => p.category === cat.id).length
-    return {
-      ...cat,
-      itemCount: count,
-      selected: activeCategory.value === cat.id
-    }
+  if (!categories.value || !products.value) return []
+  const allProductsCount = products.value.length
+  
+  const allCategory = {
+    id: 'all',
+    name: 'All',
+    icon: '🌟',
+    itemCount: allProductsCount,
+    selected: activeCategory.value === 'all'
+  }
+
+  const otherCategories = categories.value
+    .filter(c => c.id !== 'all')
+    .map(cat => {
+      const count = products.value.filter(p => p.category === cat.id).length
+      return {
+        ...cat,
+        itemCount: count,
+        selected: activeCategory.value === cat.id
+      }
   })
+
+  return [allCategory, ...otherCategories]
 })
 
 const filteredProducts = computed(() => {
+  if (!products.value) return []
   if (activeCategory.value === 'all') return products.value
   return products.value.filter(product => product.category === activeCategory.value)
 })
@@ -220,28 +166,24 @@ const subtotal = computed(() => {
 
 const discount = computed(() => {
   let baseDiscount = 0;
-  // 5% member discount
   if (memberPhone.value) {
     baseDiscount = subtotal.value * 0.05
   }
-  
-  // Apply voucher code discount if provided
   if (voucherCode.value.trim()) {
     const voucher = voucherCode.value.toLowerCase().trim()
     if (voucher === 'save10') {
-      baseDiscount += subtotal.value * 0.10 // Additional 10% off
+      baseDiscount += subtotal.value * 0.10
     } else if (voucher === 'save20') {
-      baseDiscount += subtotal.value * 0.20 // Additional 20% off
+      baseDiscount += subtotal.value * 0.20
     } else if (voucher === 'freeshipping') {
-      baseDiscount += 5.00 // $5 off for free shipping
+      baseDiscount += 5.00
     }
   }
-  
   return Math.min(baseDiscount, subtotal.value)
 })
 
 const salesTax = computed(() => {
-  return (subtotal.value - discount.value) * 0.08 // 8% tax
+  return (subtotal.value - discount.value) * 0.08
 })
 
 const total = computed(() => {
@@ -261,7 +203,7 @@ const addToOrder = (orderItem) => {
   } else {
     orderItems.value.push({
       ...orderItem,
-      orderId: Date.now() // Unique ID for this specific order item
+      orderId: Date.now()
     })
   }
 }
@@ -306,15 +248,35 @@ const closePaymentModal = () => {
   isPaymentModalOpen.value = false
 }
 
-const handlePaymentProcessed = (paymentMethod) => {
-  console.log(`Payment processed via ${paymentMethod}`)
-  alert(`Order completed successfully! Payment method: ${paymentMethod}`)
-  
-  orderItems.value = []
-  voucherCode.value = ''
-  memberPhone.value = ''
-  memberName.value = ''
-  memberEmail.value = ''
+const handlePaymentProcessed = async (paymentMethod) => {
+  const orderToCreate = {
+    items: orderItems.value,
+    subtotal: subtotal.value,
+    discount: discount.value,
+    salesTax: salesTax.value,
+    total: total.value,
+    paymentMethod: paymentMethod,
+    customer: {
+      name: memberName.value,
+      phone: memberPhone.value,
+      email: memberEmail.value
+    },
+    voucherCode: voucherCode.value,
+    createdAt: new Date().toISOString()
+  }
+
+  try {
+    await api.createOrder(orderToCreate)
+    alert('Order completed successfully!')
+    orderItems.value = []
+    voucherCode.value = ''
+    memberPhone.value = ''
+    memberName.value = ''
+    memberEmail.value = ''
+  } catch (error) {
+    console.error('Failed to create order:', error)
+    alert('Failed to create order. Please try again.')
+  }
 }
 
 const handleExport = () => {
