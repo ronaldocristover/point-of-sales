@@ -19,28 +19,67 @@
         <div
           v-for="item in orderItems"
           :key="item.orderId || item.id"
-          class="flex items-center p-3 bg-white rounded-lg shadow-sm border"
+          class="flex items-start p-3 bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow"
         >
           <!-- Image -->
           <ImagePlaceholder :content="item.image" size="small" class="flex-shrink-0 rounded-md w-16 h-16 object-cover" />
 
           <!-- Details -->
           <div class="flex-1 ml-4">
-            <h4 class="font-bold text-gray-800 text-base">{{ item.name }}</h4>
-            <div class="flex items-center mt-2">
-              <!-- Quantity Controls -->
+            <div class="flex items-center justify-between">
+              <h4 class="font-bold text-gray-800 text-base">{{ item.name }}</h4>
+              <span class="bg-orange-100 text-orange-800 text-xs font-semibold px-2 py-1 rounded">{{ item.quantity }}x</span>
+            </div>
+
+            <!-- Show selected extra components -->
+            <div v-if="item.selectedIngredients && item.selectedIngredients.length > 0" class="mt-2 p-2 bg-gray-50 rounded border text-xs">
+              <div class="flex items-center space-x-1 mb-1">
+                <svg class="w-3 h-3 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z" clip-rule="evenodd" />
+                </svg>
+                <span class="font-semibold text-orange-600">Extra Components:</span>
+              </div>
+              <div class="flex flex-wrap gap-1">
+                <span v-for="ingredient in item.selectedIngredients" :key="ingredient.id" class="bg-white px-2 py-1 rounded border text-gray-700">
+                  {{ ingredient.name }}{{ ingredient.quantity > 1 ? ` (${ingredient.quantity}x)` : '' }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Show selected custom components -->
+            <div v-if="item.selectedCustomComponents && item.selectedCustomComponents.length > 0" class="mt-2 p-2 bg-purple-50 rounded border border-purple-200 text-xs">
+              <div class="flex items-center space-x-1 mb-1">
+                <svg class="w-3 h-3 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+                </svg>
+                <span class="font-semibold text-purple-600">Custom Additions:</span>
+              </div>
+              <div class="flex flex-wrap gap-1">
+                <span v-for="customComp in item.selectedCustomComponents" :key="customComp.id" class="bg-white px-2 py-1 rounded border text-purple-700">
+                  {{ customComp.name }}{{ customComp.quantity > 1 ? ` (${customComp.quantity}x)` : '' }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Special Instructions -->
+            <div v-if="item.specialInstructions" class="mt-2 text-xs text-gray-500 italic">
+              "Note: {{ item.specialInstructions }}"
+            </div>
+
+            <!-- Quantity Controls -->
+            <div class="flex items-center mt-3 space-x-2">
               <button
                 @click.stop="$emit('update-quantity', item.orderId || item.id, item.quantity - 1)"
-                class="w-7 h-7 bg-gray-200 rounded-md flex items-center justify-center hover:bg-gray-300 transition-colors"
+                class="w-6 h-6 bg-gray-100 rounded flex items-center justify-center hover:bg-gray-200 transition-colors"
               >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
               </button>
-              <span class="mx-3 font-bold text-orange-500 text-base">{{ item.quantity }}</span>
+              <span class="text-sm font-bold text-orange-600">{{ item.quantity }}</span>
               <button
                 @click.stop="$emit('update-quantity', item.orderId || item.id, item.quantity + 1)"
-                class="w-7 h-7 bg-gray-200 rounded-md flex items-center justify-center hover:bg-gray-300 transition-colors"
+                class="w-6 h-6 bg-gray-100 rounded flex items-center justify-center hover:bg-gray-200 transition-colors"
               >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
               </button>
             </div>
           </div>
@@ -49,11 +88,16 @@
           <div class="text-right ml-4">
             <button
               @click.stop="$emit('remove-item', item.orderId || item.id)"
-              class="text-gray-400 hover:text-red-500 mb-2 transition-colors"
+              class="text-gray-400 hover:text-red-500 mb-2 transition-colors p-1"
             >
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd"></path></svg>
             </button>
-            <p class="font-bold text-gray-800 text-base">${{ (item.price * item.quantity).toFixed(2) }}</p>
+            <p class="font-bold text-gray-800 text-base">${{ (item.totalPrice || item.price * item.quantity).toFixed(2) }}</p>
+            <div class="text-xs text-gray-500">
+              <span v-if="item.basePrice">Base: ${{ item.basePrice.toFixed(2) }}</span>
+              <span v-if="item.ingredientCost && item.ingredientCost > 0" class="block text-orange-600 font-medium">+${{ item.ingredientCost.toFixed(2) }} extras</span>
+              <span v-if="item.customComponentCost && item.customComponentCost > 0" class="block text-purple-600 font-medium">+${{ item.customComponentCost.toFixed(2) }} custom</span>
+            </div>
           </div>
         </div>
       </div>

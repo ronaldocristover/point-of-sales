@@ -6,7 +6,10 @@
     <!-- Product Info -->
     <div class="mb-3">
       <h3 class="font-bold text-gray-900 text-base mb-1 line-clamp-2">{{ product.name }}</h3>
-      <p class="text-xl font-bold text-orange-500">${{ product.price.toFixed(2) }}</p>
+      <p class="text-xl font-bold text-orange-500">
+        ${{ (product.basePrice || product.price || 0).toFixed(2) }}
+        <span v-if="product.basePrice" class="text-xs font-normal text-gray-500">+ ingredients</span>
+      </p>
     </div>
     
     <!-- Add to Order Button -->
@@ -14,7 +17,7 @@
       @click="$emit('show-modal', product)"
       class="w-full bg-orange-400 text-white py-2 px-4 rounded-md hover:bg-orange-500 transition-colors font-bold text-base"
     >
-      Add to Order
+      Customize & Order
     </button>
   </div>
 </template>

@@ -9,7 +9,7 @@
     "generate:do": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "api": "json-server --watch db.json --port 3001"
+    "api": "json-server --watch db.json --port 3005"
   },
   "dependencies": {
     "@nuxt/content": "^3.6.3",

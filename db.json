@@ -1,76 +1,500 @@
 {
   "categories": [
-    { "id": "all", "name": "All", "icon": "🌟" },
-    { "id": "brew-equipment", "name": "Brew Equipment", "icon": "🛠️" },
-    { "id": "coffee", "name": "Coffee", "icon": "☕" },
-    { "id": "espresso", "name": "Espresso", "icon": "⚡" },
-    { "id": "instant-rtd", "name": "Instant + RTD", "icon": "🧊" },
-    { "id": "ceramics", "name": "Ceramics", "icon": "🏺" },
-    { "id": "apparel", "name": "Apparel", "icon": "👕" }
+    {
+      "id": "all",
+      "name": "All",
+      "icon": "🌟"
+    },
+    {
+      "id": "food",
+      "name": "Food",
+      "icon": "🍔"
+    },
+    {
+      "id": "drinks",
+      "name": "Drinks",
+      "icon": "🥤"
+    },
+    {
+      "id": "sides",
+      "name": "Sides",
+      "icon": "🍟"
+    },
+    {
+      "id": "desserts",
+      "name": "Desserts",
+      "icon": "🍰"
+    }
+  ],
+  "ingredients": [
+    {
+      "id": 1,
+      "name": "Beef Patty",
+      "cost": 3.00,
+      "category": "protein",
+      "available": true
+    },
+    {
+      "id": 2,
+      "name": "Cheese",
+      "cost": 5.00,
+      "category": "dairy",
+      "available": true
+    },
+    {
+      "id": 3,
+      "name": "Lettuce",
+      "cost": 1.00,
+      "category": "vegetable",
+      "available": true
+    },
+    {
+      "id": 4,
+      "name": "Tomato",
+      "cost": 1.50,
+      "category": "vegetable",
+      "available": true
+    },
+    {
+      "id": 5,
+      "name": "Onion",
+      "cost": 0.80,
+      "category": "vegetable",
+      "available": true
+    },
+    {
+      "id": 6,
+      "name": "Pickles",
+      "cost": 1.20,
+      "category": "vegetable",
+      "available": true
+    },
+    {
+      "id": 7,
+      "name": "Bacon",
+      "cost": 4.00,
+      "category": "protein",
+      "available": true
+    },
+    {
+      "id": 8,
+      "name": "Egg",
+      "cost": 2.50,
+      "category": "protein",
+      "available": true
+    },
+    {
+      "id": 9,
+      "name": "Mushrooms",
+      "cost": 2.00,
+      "category": "vegetable",
+      "available": true
+    },
+    {
+      "id": 10,
+      "name": "Avocado",
+      "cost": 3.50,
+      "category": "vegetable",
+      "available": true
+    },
+    {
+      "id": 11,
+      "name": "Saus Tomat",
+      "cost": 0.50,
+      "category": "sauce",
+      "available": true
+    },
+    {
+      "id": 12,
+      "name": "Saus Sambal",
+      "cost": 0.75,
+      "category": "sauce",
+      "available": true
+    },
+    {
+      "id": 13,
+      "name": "Cabai Rawit",
+      "cost": 0.30,
+      "category": "spicy",
+      "available": true
+    },
+    {
+      "id": 14,
+      "name": "Cabai Merah",
+      "cost": 0.40,
+      "category": "spicy",
+      "available": true
+    },
+    {
+      "id": 15,
+      "name": "Extra Mayo",
+      "cost": 0.60,
+      "category": "sauce",
+      "available": true
+    },
+    {
+      "id": 16,
+      "name": "Saus BBQ",
+      "cost": 0.80,
+      "category": "sauce",
+      "available": true
+    },
+    {
+      "id": 17,
+      "name": "Saus Hot Chili",
+      "cost": 0.70,
+      "category": "sauce",
+      "available": true
+    },
+    {
+      "id": 18,
+      "name": "Extra Keju",
+      "cost": 1.00,
+      "category": "addon",
+      "available": true
+    }
+  ],
+  "components": [
+    {
+      "id": 1,
+      "name": "Burger Patty",
+      "type": "protein",
+      "basePrice": 3.00,
+      "options": [
+        {
+          "id": 101,
+          "name": "Beef Patty",
+          "price": 3.00,
+          "image": "🥩"
+        },
+        {
+          "id": 102,
+          "name": "Chicken Patty",
+          "price": 2.50,
+          "image": "🍗"
+        },
+        {
+          "id": 103,
+          "name": "Veggie Patty",
+          "price": 2.00,
+          "image": "🥬"
+        },
+        {
+          "id": 104,
+          "name": "Salmon Patty",
+          "price": 5.00,
+          "image": "🐟"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Cheese Type",
+      "type": "dairy",
+      "basePrice": 1.00,
+      "options": [
+        {
+          "id": 201,
+          "name": "Cheddar Cheese",
+          "price": 1.50,
+          "image": "🧀"
+        },
+        {
+          "id": 202,
+          "name": "Swiss Cheese",
+          "price": 1.75,
+          "image": "🧀"
+        },
+        {
+          "id": 203,
+          "name": "Blue Cheese",
+          "price": 2.00,
+          "image": "🧀"
+        },
+        {
+          "id": 204,
+          "name": "No Cheese",
+          "price": 0.00,
+          "image": "❌"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Bun Type",
+      "type": "bread",
+      "basePrice": 1.00,
+      "options": [
+        {
+          "id": 301,
+          "name": "Regular Bun",
+          "price": 1.00,
+          "image": "🍔"
+        },
+        {
+          "id": 302,
+          "name": "Brioche Bun",
+          "price": 1.50,
+          "image": "🥐"
+        },
+        {
+          "id": 303,
+          "name": "Whole Wheat Bun",
+          "price": 1.25,
+          "image": "🌾"
+        },
+        {
+          "id": 304,
+          "name": "Lettuce Wrap",
+          "price": 0.50,
+          "image": "🥬"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Toppings",
+      "type": "vegetable",
+      "basePrice": 0.00,
+      "options": [
+        {
+          "id": 401,
+          "name": "Lettuce",
+          "price": 0.50,
+          "image": "🥬"
+        },
+        {
+          "id": 402,
+          "name": "Tomato",
+          "price": 0.75,
+          "image": "🍅"
+        },
+        {
+          "id": 403,
+          "name": "Onion",
+          "price": 0.40,
+          "image": "🧅"
+        },
+        {
+          "id": 404,
+          "name": "Pickles",
+          "price": 0.60,
+          "image": "🥒"
+        },
+        {
+          "id": 405,
+          "name": "Mushrooms",
+          "price": 1.00,
+          "image": "🍄"
+        },
+        {
+          "id": 406,
+          "name": "Avocado",
+          "price": 1.50,
+          "image": "🥑"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Sauces",
+      "type": "sauce",
+      "basePrice": 0.00,
+      "options": [
+        {
+          "id": 501,
+          "name": "Ketchup",
+          "price": 0.00,
+          "image": "🍅"
+        },
+        {
+          "id": 502,
+          "name": "Mustard",
+          "price": 0.00,
+          "image": "🟡"
+        },
+        {
+          "id": 503,
+          "name": "Mayo",
+          "price": 0.25,
+          "image": "⚪"
+        },
+        {
+          "id": 504,
+          "name": "BBQ Sauce",
+          "price": 0.50,
+          "image": "🔴"
+        },
+        {
+          "id": 505,
+          "name": "Special Sauce",
+          "price": 0.75,
+          "image": "⭐"
+        }
+      ]
+    }
+  ],
+  "productComponents": [
+    {
+      "productId": 1,
+      "componentId": 1,
+      "required": true,
+      "defaultOption": 101
+    },
+    {
+      "productId": 1,
+      "componentId": 2,
+      "required": false,
+      "defaultOption": 201
+    },
+    {
+      "productId": 1,
+      "componentId": 3,
+      "required": true,
+      "defaultOption": 301
+    },
+    {
+      "productId": 1,
+      "componentId": 4,
+      "required": false,
+      "defaultOption": 401,
+      "multipleSelection": true
+    },
+    {
+      "productId": 1,
+      "componentId": 5,
+      "required": false,
+      "defaultOption": 501,
+      "multipleSelection": true
+    },
+    {
+      "productId": 2,
+      "componentId": 1,
+      "required": true,
+      "defaultOption": 101
+    },
+    {
+      "productId": 2,
+      "componentId": 2,
+      "required": true,
+      "defaultOption": 201
+    },
+    {
+      "productId": 2,
+      "componentId": 3,
+      "required": true,
+      "defaultOption": 301
+    },
+    {
+      "productId": 2,
+      "componentId": 4,
+      "required": false,
+      "defaultOption": 401,
+      "multipleSelection": true
+    },
+    {
+      "productId": 3,
+      "componentId": 1,
+      "required": true,
+      "defaultOption": 102
+    },
+    {
+      "productId": 3,
+      "componentId": 2,
+      "required": true,
+      "defaultOption": 202
+    },
+    {
+      "productId": 3,
+      "componentId": 3,
+      "required": true,
+      "defaultOption": 302
+    },
+    {
+      "productId": 3,
+      "componentId": 4,
+      "required": true,
+      "defaultOption": 401,
+      "multipleSelection": true
+    },
+    {
+      "productId": 3,
+      "componentId": 5,
+      "required": true,
+      "defaultOption": 504
+    },
+    {
+      "productId": 4,
+      "componentId": 1,
+      "required": true,
+      "defaultOption": 103
+    },
+    {
+      "productId": 4,
+      "componentId": 2,
+      "required": false,
+      "defaultOption": 204
+    },
+    {
+      "productId": 4,
+      "componentId": 3,
+      "required": true,
+      "defaultOption": 304
+    }
   ],
   "products": [
     {
       "id": 1,
-      "name": "Pour Over Coffee Maker",
-      "price": 29.99,
-      "category": "brew-equipment",
-      "image": "☕"
+      "name": "Classic Burger",
+      "basePrice": 8.00,
+      "category": "food",
+      "image": "🍔",
+      "description": "A delicious burger with your choice of ingredients"
     },
     {
       "id": 2,
-      "name": "Premium Arabica Beans",
-      "price": 15.99,
-      "category": "coffee",
-      "image": "🫘"
+      "name": "Cheese Burger",
+      "basePrice": 10.00,
+      "category": "food",
+      "image": "🧀",
+      "description": "Classic burger with cheese"
     },
     {
       "id": 3,
-      "name": "Espresso Machine",
-      "price": 299.99,
-      "category": "espresso",
-      "image": "⚡"
+      "name": "Deluxe Burger",
+      "basePrice": 12.00,
+      "category": "food",
+      "image": "🍔",
+      "description": "Premium burger with all the fixings"
     },
     {
       "id": 4,
-      "name": "Ceramic Coffee Mug",
-      "price": 12.99,
-      "category": "ceramics",
-      "image": "☕"
+      "name": "Breakfast Sandwich",
+      "basePrice": 7.00,
+      "category": "food",
+      "image": "🍳",
+      "description": "Morning sandwich with egg and cheese"
     },
     {
       "id": 5,
-      "name": "Coffee Grinder",
-      "price": 89.99,
-      "category": "brew-equipment",
-      "image": "⚙️"
+      "name": "French Fries",
+      "price": 3.99,
+      "category": "sides",
+      "image": "🍟"
     },
     {
       "id": 6,
-      "name": "Cold Brew Kit",
-      "price": 45.99,
-      "category": "instant-rtd",
-      "image": "🧊"
+      "name": "Soft Drink",
+      "price": 2.99,
+      "category": "drinks",
+      "image": "🥤"
     },
     {
       "id": 7,
-      "name": "Barista Apron",
-      "price": 24.99,
-      "category": "apparel",
-      "image": "👕"
-    },
-    {
-      "id": 8,
-      "name": "French Press",
-      "price": 34.99,
-      "category": "brew-equipment",
-      "image": "☕"
-    },
-    {
-      "id": 9,
-      "name": "Espresso Cups Set",
-      "price": 19.99,
-      "category": "ceramics",
-      "image": "☕"
+      "name": "Ice Cream",
+      "price": 4.99,
+      "category": "desserts",
+      "image": "🍦"
     }
   ],
   "orders": []

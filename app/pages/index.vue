@@ -73,6 +73,8 @@
       v-if="selectedProduct"
       :is-open="isModalOpen"
       :product="selectedProduct"
+      :ingredients="ingredients"
+      :product-ingredients="productIngredients"
       @close="closeProductModal"
       @add-to-order="addToOrder"
     />
@@ -114,6 +116,8 @@ const api = useApi()
 // Data fetching
 const { data: categories, pending: categoriesLoading } = await useAsyncData('categories', () => api.getCategories(), { default: () => [] })
 const { data: products, pending: productsLoading } = await useAsyncData('products', () => api.getProducts(), { default: () => [] })
+const { data: ingredients, pending: ingredientsLoading } = await useAsyncData('ingredients', () => api.getIngredients(), { default: () => [] })
+const { data: productIngredients, pending: productIngredientsLoading } = await useAsyncData('productIngredients', () => api.getProductIngredients(), { default: () => [] })
 
 const orderItems = ref([])
 const activeCategory = ref('all')
@@ -161,7 +165,7 @@ const filteredProducts = computed(() => {
 })
 
 const subtotal = computed(() => {
-  return orderItems.value.reduce((sum, item) => sum + (item.totalPrice || item.price * item.quantity), 0)
+  return orderItems.value.reduce((sum, item) => sum + (item.totalPrice || (item.price * item.quantity)), 0)
 })
 
 const discount = computed(() => {
